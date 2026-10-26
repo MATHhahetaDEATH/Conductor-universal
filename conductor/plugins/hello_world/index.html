@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hello World</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      text-align: center;
+    }
+    input {
+      padding: 5px;
+      font-size: 16px;
+    }
+    button {
+      padding: 6px 10px;
+      font-size: 16px;
+      margin-left: 5px;
+    }
+    #result {
+      margin-top: 15px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div>
+      Hello, <input type="text" id="nameInput" />!
+      <button onclick="sayHello()">Go!</button>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function sayHello() {
+      const name = document.getElementById("nameInput").value;
+      document.getElementById("result").innerText = "Hello, " + name + "!";
+    }
+  </script>
+</body>
+</html>

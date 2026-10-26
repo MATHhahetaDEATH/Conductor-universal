@@ -1,0 +1,33 @@
+# Python/runtime
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.log
+
+# Local application state
+storage/
+conductor/storage/
+backup/
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.*
+!.env.example
+
+# Frontend installs/build output
+WebApp/node_modules/
+WebApp/build/
+WebApp/dist/
+WebApp/.stylelintcache
+WebApp/.eslintcache
+
+# Local archive/reference material
+archive/
+
+# Generated route manifest (a checked-in bootstrap copy may be recreated)
+WebApp/src/plugin_routes.ts

@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "conductor"
+version = "0.1.0"
+description = "An extensible information processing system kernel"
+authors = ["Antigravity <antigravity@example.com>"]
+readme = "README.md"
+packages = [{include = "conductor"}]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+flask = "^3.0.0"
+pydantic = ">=2.0.0"
+python-dotenv = "^1.0.0"
+prompt-toolkit = "^3.0.0"
+SQLAlchemy = ">=2"
+blake3 = "*"
+pathspec = "*"
+psutil = "*"
+pytz = "*"
+typing_extensions = "*"
+xxhash = ">=3"
+zstandard = "*"
+APScheduler = ">=3.8,<4"
+fastcdc = "*"
+
+llama-cpp-python = ">=0.2.90"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0.0"
+black = "^23.0.0"
+isort = "^5.12.0"
+mypy = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

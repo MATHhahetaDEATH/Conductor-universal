@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hello World</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      text-align: center;
+    }
+    input {
+      padding: 5px;
+      font-size: 16px;
+    }
+    button {
+      padding: 6px 10px;
+      font-size: 16px;
+      margin-left: 5px;
+    }
+    #result {
+      margin-top: 15px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div>
+      Hello, <input type="text" id="nameInput" />!
+      <button onclick="sayHello()">Go!</button>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    let greeting = "Hello";
+
+    async function loadState() {
+      try {
+        const response = await fetch("/api/hello_world/state");
+        const payload = await response.json();
+        const state = payload.data || {};
+        greeting = state.greeting || "Hello";
+        const name = state.last_name || "world";
+        document.getElementById("nameInput").value = name;
+        document.getElementById("result").innerText = greeting + ", " + name + "!";
+      } catch (error) {
+        document.getElementById("result").innerText = "Failed to load saved name.";
+      }
+    }
+
+    async function sayHello() {
+      const name = document.getElementById("nameInput").value || "world";
+      try {
+        const response = await fetch("/api/hello_world/state", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name })
+        });
+        const payload = await response.json();
+        const state = payload.data || {};
+        greeting = state.greeting || greeting;
+        document.getElementById("nameInput").value = state.last_name || name;
+        document.getElementById("result").innerText = greeting + ", " + (state.last_name || name) + "!";
+      } catch (error) {
+        document.getElementById("result").innerText = "Failed to save name.";
+      }
+    }
+
+    loadState();
+  </script>
+</body>
+</html>
