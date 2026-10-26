@@ -101,11 +101,11 @@ For local development:
 API
 ---
 
-``GET /api/management/dependencies``
+``GET /api/core/dependencies``
     Returns current dependency status, plugin ownership, next manifest-update actions, and manifest sync preview.
 
-``POST /api/management/dependencies/sync``
+``POST /api/core/dependencies/sync``
     Synchronizes plugin dependencies into project manifests. Body: ``{"ecosystem": "all"}``, ``{"ecosystem": "python"}``, or ``{"ecosystem": "web"}``.
 
-``POST /api/management/dependencies/install``
+``POST /api/core/dependencies/install``
     Legacy explicit runtime installer. Prefer manifest sync plus ``poetry install`` / ``yarn install``.

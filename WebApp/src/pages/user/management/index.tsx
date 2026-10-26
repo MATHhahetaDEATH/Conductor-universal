@@ -55,6 +55,11 @@ function UserManagement() {
     axios
       .get('/api/users')
       .then((res) => setUsers(res.data.data || []))
+      .catch((error) => {
+        Message.error(
+          error?.response?.data?.errorMessage || 'Failed to load users'
+        );
+      })
       .finally(() => setLoading(false));
   };
 

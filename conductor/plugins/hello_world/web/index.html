@@ -42,9 +42,16 @@
   <script>
     let greeting = "Hello";
 
+    function authorizedFetch(input, init = {}) {
+      const token = localStorage.getItem("conductorToken");
+      const headers = Object.assign({}, init.headers || {});
+      if (token) headers.Authorization = `Bearer ${token}`;
+      return fetch(input, Object.assign({}, init, { headers }));
+    }
+
     async function loadState() {
       try {
-        const response = await fetch("/api/hello_world/state");
+        const response = await authorizedFetch("/api/hello_world/state");
         const payload = await response.json();
         const state = payload.data || {};
         greeting = state.greeting || "Hello";
@@ -59,7 +66,7 @@
     async function sayHello() {
       const name = document.getElementById("nameInput").value || "world";
       try {
-        const response = await fetch("/api/hello_world/state", {
+        const response = await authorizedFetch("/api/hello_world/state", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name })
@@ -72,6 +79,7 @@
       } catch (error) {
         document.getElementById("result").innerText = "Failed to save name.";
       }
+
     }
 
     loadState();

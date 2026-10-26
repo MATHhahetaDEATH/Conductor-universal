@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import {
   Tooltip,
   Input,
@@ -18,9 +18,6 @@ import {
   IconUser,
   IconSettings,
   IconPoweroff,
-  IconExperiment,
-  IconDashboard,
-  IconInteraction,
   IconLoading,
 } from '@arco-design/web-react/icon';
 import { useHistory } from 'react-router-dom';
@@ -35,6 +32,8 @@ import Settings from '../Settings';
 import styles from './style/index.module.less';
 import defaultLocale from '@/locale';
 import useStorage from '@/utils/useStorage';
+import { routes, IRoute } from '@/routes';
+import { authorizedFetch } from '@/utils/request';
 
 function Navbar({ show }: { show: boolean }) {
   const t = useLocale();
@@ -45,17 +44,50 @@ function Navbar({ show }: { show: boolean }) {
 
   const { setLang, lang, theme, setTheme } = useContext(GlobalContext);
 
-  function logout() {
-    setUserStatus('logout');
-    localStorage.removeItem('conductorToken');
-    window.location.href = '/login';
+  const searchableRoutes = useMemo(() => {
+    const result: Array<{ path: string; label: string }> = [];
+    const visit = (items: IRoute[]) => {
+      items.forEach((route) => {
+        if (route.ignore) return;
+        const path = route.path || `/${route.key}`;
+        if (route.component && path) {
+          result.push({ path, label: t[route.name] || route.name });
+        }
+        if (route.children) visit(route.children);
+      });
+    };
+    visit(routes);
+    return result;
+  }, [t]);
+
+  function handleSearch(value: string) {
+    const query = value.trim().toLocaleLowerCase();
+    if (!query) return;
+    const match = searchableRoutes.find((route) =>
+      `${route.label} ${route.path}`.toLocaleLowerCase().includes(query)
+    );
+    if (match) {
+      history.push(match.path);
+    } else {
+      Message.info(t['navbar.search.noResults'] || 'No matching page');
+    }
+  }
+
+  async function logout() {
+    try {
+      await authorizedFetch('/api/user/logout', { method: 'POST' });
+    } catch (_error) {
+      // Local logout still proceeds when the server is unreachable.
+    } finally {
+      setUserStatus('logout');
+      localStorage.removeItem('conductorToken');
+      window.location.href = '/login';
+    }
   }
 
   function onMenuItemClick(key) {
     if (key === 'logout') {
       logout();
-    } else if (key === 'setting') {
-      history.push('/user/setting');
     } else if (key === 'management') {
       history.push('/user/management');
     } else {
@@ -83,35 +115,12 @@ function Navbar({ show }: { show: boolean }) {
           {userInfo?.permission_name || t['menu.user.role.user']}
         </span>
       </Menu.Item>
-      <Menu.Item key="setting">
-        <IconSettings className={styles['dropdown-icon']} />
-        {t['menu.user.setting']}
-      </Menu.Item>
       {userInfo?.permissions?.['system.users']?.includes('manage') && (
         <Menu.Item key="management">
           <IconUser className={styles['dropdown-icon']} />
           {t['menu.user.management']}
         </Menu.Item>
       )}
-      <Menu.SubMenu
-        key="more"
-        title={
-          <div style={{ width: 80 }}>
-            <IconExperiment className={styles['dropdown-icon']} />
-            {t['message.seeMore']}
-          </div>
-        }
-      >
-        <Menu.Item key="workplace">
-          <IconDashboard className={styles['dropdown-icon']} />
-          {t['menu.dashboard.workplace']}
-        </Menu.Item>
-        <Menu.Item key="card list">
-          <IconInteraction className={styles['dropdown-icon']} />
-          {t['menu.list.cardList']}
-        </Menu.Item>
-      </Menu.SubMenu>
-
       <Divider style={{ margin: '4px 0' }} />
       <Menu.Item key="logout">
         <IconPoweroff className={styles['dropdown-icon']} />
@@ -133,6 +142,7 @@ function Navbar({ show }: { show: boolean }) {
           <Input.Search
             className={styles.round}
             placeholder={t['navbar.search.placeholder']}
+            onSearch={handleSearch}
           />
         </li>
         <li>
@@ -182,8 +192,10 @@ function Navbar({ show }: { show: boolean }) {
               <Avatar size={32} style={{ cursor: 'pointer' }}>
                 {userLoading ? (
                   <IconLoading />
-                ) : (
+                ) : userInfo.avatar ? (
                   <img alt="avatar" src={userInfo.avatar} />
+                ) : (
+                  <IconUser />
                 )}
               </Avatar>
             </Dropdown>

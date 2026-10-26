@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { GlobalState } from '@/store';
 import {
   Card,
   Grid,
@@ -14,20 +16,19 @@ import {
   IconPoweroff,
   IconRefresh,
 } from '@arco-design/web-react/icon';
+import { requestJson } from '@/utils/request';
 
 const { Row, Col } = Grid;
 
 const Dashboard: React.FC = () => {
   const history = useHistory();
+  const userInfo = useSelector((state: GlobalState) => state.userInfo);
   const [status, setStatus] = useState<any>(null);
+  const canShutdown = Number(userInfo?.permission_level || 0) >= 3;
 
   const fetchStatus = async () => {
     try {
-      const resp = await fetch('/api/dashboard/status');
-      const data = await resp.json();
-      if (data.success) {
-        setStatus(data.data);
-      }
+      setStatus(await requestJson('/api/dashboard/status'));
     } catch (e) {
       Message.error('Failed to fetch system status');
     }
@@ -44,6 +45,20 @@ const Dashboard: React.FC = () => {
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
     return `${h}h ${m}m ${s}s`;
+  };
+
+  const shutdown = async () => {
+    if (!window.confirm('Shutdown the Conductor kernel?')) return;
+    try {
+      await requestJson('/api/core/cli/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: '!!stop' }),
+      });
+      Message.success('Shutdown command accepted');
+    } catch (error: any) {
+      Message.error(error?.message || 'Shutdown failed');
+    }
   };
 
   return (
@@ -99,7 +114,9 @@ const Dashboard: React.FC = () => {
           <Button
             status="danger"
             icon={<IconPoweroff />}
-            onClick={() => Message.info('Shutdown command sent (Mock)')}
+            onClick={shutdown}
+            disabled={!canShutdown}
+            title={canShutdown ? undefined : 'Admin permission required'}
           >
             Shutdown Kernel
           </Button>

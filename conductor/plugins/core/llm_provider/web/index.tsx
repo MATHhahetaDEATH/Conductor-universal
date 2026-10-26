@@ -33,6 +33,7 @@ import {
   IconSend,
 } from '@arco-design/web-react/icon';
 import { useHistory } from 'react-router-dom';
+import { requestJson } from '@/utils/request';
 
 const { Row, Col } = Grid;
 const { Title, Text } = Typography;
@@ -161,24 +162,6 @@ const emptyProviderEditor = (): ProviderEditorState => ({
   maxTokens: 512,
   timeout: 60,
 });
-
-const requestJson = async <T,>(
-  url: string,
-  options?: RequestInit
-): Promise<T> => {
-  const res = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options?.headers || {}),
-    },
-    ...options,
-  });
-  const data = await res.json();
-  if (!data.success) {
-    throw new Error(data.errorMessage || 'Request failed');
-  }
-  return data.data;
-};
 
 const parseTags = (text: string) =>
   text
@@ -327,8 +310,8 @@ const LLMProviderPage: React.FC = () => {
   useEffect(() => {
     refreshAll();
     const timer = window.setInterval(() => {
-      loadStatus();
-      loadPluginLogs();
+      loadStatus().catch((error) => Message.error(String(error)));
+      loadPluginLogs().catch((error) => Message.error(String(error)));
     }, 3000);
     return () => window.clearInterval(timer);
   }, [loadPluginLogs, loadStatus, refreshAll]);

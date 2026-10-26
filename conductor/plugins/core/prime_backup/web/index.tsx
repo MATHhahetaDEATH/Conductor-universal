@@ -57,7 +57,7 @@ const PrimeBackup: React.FC = () => {
         setStatus(res.data);
       }
     } catch (e) {
-      console.error(e);
+      Message.error('Failed to load backup status');
     } finally {
       setStatusLoading(false);
     }
@@ -95,8 +95,8 @@ const PrimeBackup: React.FC = () => {
       } else {
         Message.error(res.errorMessage || 'Failed to trigger backup');
       }
-    } catch (e) {
-      // Validation error or API error
+    } catch (e: any) {
+      if (e?.message) Message.error(e.message);
     }
   };
 
@@ -129,8 +129,8 @@ const PrimeBackup: React.FC = () => {
       } else {
         Message.error(res.errorMessage || 'Failed to trigger restoration');
       }
-    } catch (e) {
-      // Validation error
+    } catch (e: any) {
+      if (e?.message) Message.error(e.message);
     }
   };
 

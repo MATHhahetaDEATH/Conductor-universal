@@ -5,7 +5,7 @@ export async function getPluginInfo(
   options?: { [key: string]: any }
 ) {
   return axios
-    .get('/api/web_cli/info', { params: { plugin_id: pluginId }, ...options })
+    .get('/api/core/cli/info', { params: { plugin_id: pluginId }, ...options })
     .then((res) => res.data);
 }
 
@@ -14,7 +14,7 @@ export async function suggestCommand(
   options?: { [key: string]: any }
 ) {
   return axios
-    .post('/api/web_cli/suggest', body, options)
+    .post('/api/core/cli/suggest', body, options)
     .then((res) => res.data);
 }
 
@@ -23,6 +23,6 @@ export async function executeCommand(
   options?: { [key: string]: any }
 ) {
   return axios
-    .post('/api/web_cli/execute', body, options)
+    .post('/api/core/cli/execute', body, options)
     .then((res) => res.data);
 }

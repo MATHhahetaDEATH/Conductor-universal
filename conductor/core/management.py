@@ -46,6 +46,11 @@ def _safe_file(kernel, pid: str, category: str, name: str, write: bool = False) 
     return target
 
 
+def _plugin_exists(kernel, pid: str) -> bool:
+    kernel.dependencies.scan_plugin_dirs()
+    return pid in kernel.dependencies.get_plugin_records()
+
+
 def register_management(kernel) -> None:
     @core_management_bp.get("/plugins")
     @require_admin(kernel)
@@ -68,6 +73,8 @@ def register_management(kernel) -> None:
         pid = request.args.get("id")
         if not pid:
             return jsonify({"success": False, "errorMessage": "id is required"}), 400
+        if not _plugin_exists(kernel, pid):
+            return jsonify({"success": False, "errorMessage": "Plugin not found"}), 404
         result = []
         for category, directory in (("config", kernel.get_plugin_config_dir(pid)), ("data", kernel.get_plugin_data_dir(pid))):
             result.extend({"name": item.name, "category": category} for item in Path(directory).iterdir() if item.is_file())
@@ -80,6 +87,8 @@ def register_management(kernel) -> None:
         pid, name, category = data.get("id"), data.get("name"), data.get("category")
         if not all((pid, name, category)):
             return jsonify({"success": False, "errorMessage": "id, name and category are required"}), 400
+        if not _plugin_exists(kernel, pid):
+            return jsonify({"success": False, "errorMessage": "Plugin not found"}), 404
         try:
             target = _safe_file(kernel, pid, category, name, write=request.method == "POST")
         except (ValueError, PermissionError) as exc:

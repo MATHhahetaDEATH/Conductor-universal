@@ -1,5 +1,1 @@
-XSym
-0077
-4fcb1d4c8ffac60b1c99fc20642e2b87
-/Volumes/SSD/anti/Conductor/conductor/plugins/core/prime_backup/web/index.tsx
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+/Users/ksmtang/Documents/anti/Conductor/conductor/plugins/core/prime_backup/web/index.tsx

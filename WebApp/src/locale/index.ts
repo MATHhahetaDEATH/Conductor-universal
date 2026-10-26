@@ -58,6 +58,7 @@ const i18n = {
     'message.empty.tips': 'No Content',
     'message.lang.tips': 'Language switch to ',
     'navbar.search.placeholder': 'Please search',
+    'navbar.search.noResults': 'No matching page',
     'user.management.subtitle':
       'Manage local accounts and Conductor permission levels.',
     'user.management.create': 'Create User',
@@ -142,6 +143,7 @@ const i18n = {
     'message.empty.tips': '暂无内容',
     'message.lang.tips': '语言切换至 ',
     'navbar.search.placeholder': '输入内容查询',
+    'navbar.search.noResults': '没有匹配的页面',
     'user.management.subtitle': '管理本地账户以及 Conductor 权限等级。',
     'user.management.create': '新建用户',
     'user.management.createUser': '新建用户',

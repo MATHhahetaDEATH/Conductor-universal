@@ -1,5 +1,1 @@
-XSym
-0071
-ca2a694064179c9f0534dd5117786207
-/Volumes/SSD/anti/Conductor/conductor/plugins/hello_world/web/index.tsx
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+/Users/ksmtang/Documents/anti/Conductor/conductor/plugins/hello_world/web/index.tsx

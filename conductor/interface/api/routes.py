@@ -39,7 +39,9 @@ def register_routes(app: Flask, kernel) -> None:
         level = public["permission_level"]
         return {
             **public,
-            "avatar": "https://lf1-xgcdn-tos.pstatp.com/obj/vcloud/vadmin/start.8e0e4855ee346a46ccff8ff3e24db27b.png",
+            # Keep the profile self-contained; the frontend renders a local
+            # icon when no uploaded avatar is configured.
+            "avatar": "",
             "email": "",
             "job": PermissionLevel(level).name.lower(),
             "jobName": PermissionLevel(level).name.title(),

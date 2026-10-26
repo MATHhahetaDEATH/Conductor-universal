@@ -8,6 +8,7 @@ import {
   Typography,
   Message,
 } from '@arco-design/web-react';
+import { requestJson } from '@/utils/request';
 
 const { Row, Col } = Grid;
 const { Title, Text } = Typography;
@@ -19,9 +20,7 @@ const HelloWorld: React.FC = () => {
 
   const loadState = async () => {
     try {
-      const res = await fetch('/api/hello_world/state');
-      const data = await res.json();
-      const state = data?.data || {};
+      const state = await requestJson<{ greeting?: string; last_name?: string }>('/api/hello_world/state');
       setGreeting(state.greeting || 'Hello');
       setName(state.last_name || 'world');
       setResult(`${state.greeting || 'Hello'}, ${state.last_name || 'world'}!`);
@@ -37,13 +36,11 @@ const HelloWorld: React.FC = () => {
   const sayHello = async () => {
     const target = name.trim() || 'world';
     try {
-      const res = await fetch('/api/hello_world/state', {
+      const state = await requestJson<{ greeting?: string; last_name?: string }>('/api/hello_world/state', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: target }),
       });
-      const data = await res.json();
-      const state = data?.data || {};
       setGreeting(state.greeting || greeting);
       setName(state.last_name || target);
       setResult(`${state.greeting || greeting}, ${state.last_name || target}!`);

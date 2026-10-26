@@ -5,7 +5,6 @@ import {
   Checkbox,
   Grid,
   InputNumber,
-  Link,
   Message,
   Select,
   Space,
@@ -19,6 +18,7 @@ import {
 } from '@arco-design/web-react/icon';
 import Editor from '@monaco-editor/react';
 import { useHistory } from 'react-router-dom';
+import { authorizedFetch, requestJson } from '@/utils/request';
 
 const { Title, Text } = Typography;
 const { Row, Col } = Grid;
@@ -48,16 +48,14 @@ const LogManager: React.FC = () => {
   }, [files, category]);
 
   const loadSettings = async () => {
-    const res = await fetch('/api/logs/settings');
-    const data = await res.json();
-    setSettings(data.data || {});
-    setDraftSettings(data.data || {});
+    const data = await requestJson('/api/logs/settings');
+    setSettings(data || {});
+    setDraftSettings(data || {});
   };
 
   const loadFiles = async () => {
-    const res = await fetch('/api/logs/files');
-    const data = await res.json();
-    setFiles(data?.data?.files || []);
+    const data = await requestJson<{ files?: any[] }>('/api/logs/files');
+    setFiles(data?.files || []);
   };
 
   const loadRecords = async () => {
@@ -66,52 +64,69 @@ const LogManager: React.FC = () => {
     if (owner) params.set('owner', owner);
     if (selectedLevels.length) params.set('levels', selectedLevels.join(','));
     params.set('limit', '500');
-    const res = await fetch(`/api/logs/records?${params.toString()}`);
-    const data = await res.json();
-    setRecords(data?.data?.records || []);
+    const data = await requestJson<{ records?: any[] }>(`/api/logs/records?${params.toString()}`);
+    setRecords(data?.records || []);
   };
 
   useEffect(() => {
-    loadSettings();
-    loadFiles();
+    loadSettings().catch((error) => Message.error(error?.message || 'Failed to load log settings'));
+    loadFiles().catch((error) => Message.error(error?.message || 'Failed to load log files'));
   }, []);
 
   useEffect(() => {
-    loadRecords();
-    const timer = window.setInterval(loadRecords, 2000);
+    const refreshRecords = () =>
+      loadRecords().catch((error) => Message.error(error?.message || 'Failed to load log records'));
+    refreshRecords();
+    const timer = window.setInterval(refreshRecords, 2000);
     return () => window.clearInterval(timer);
   }, [category, owner, selectedLevels.join(',')]);
 
   const setLevel = async (level: string) => {
-    const nextSettings = { ...draftSettings, level };
-    setDraftSettings(nextSettings);
-    await fetch('/api/logs/settings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(nextSettings),
-    });
-    loadSettings();
-  };
-
-  const saveRetention = async () => {
-    const res = await fetch('/api/logs/settings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(draftSettings),
-    });
-    const data = await res.json();
-    if (data.success) {
-      Message.success('Log settings saved');
-      loadSettings();
-      loadFiles();
-    } else {
-      Message.error(data.errorMessage || 'Failed to save log settings');
+    try {
+      const nextSettings = { ...draftSettings, level };
+      setDraftSettings(nextSettings);
+      await requestJson('/api/logs/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nextSettings),
+      });
+      await loadSettings();
+      Message.success('Log level updated');
+    } catch (error: any) {
+      Message.error(error?.message || 'Failed to update log level');
     }
   };
 
-  const downloadUrl = owner
-    ? `/api/logs/download?category=${category}&owner=${owner}`
-    : '';
+  const saveRetention = async () => {
+    try {
+      await requestJson('/api/logs/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(draftSettings),
+      });
+      Message.success('Log settings saved');
+      await Promise.all([loadSettings(), loadFiles()]);
+    } catch (error: any) {
+      Message.error(error?.message || 'Failed to save log settings');
+    }
+  };
+
+  const downloadLogs = async () => {
+    if (!owner) return;
+    try {
+      const response = await authorizedFetch(`/api/logs/download?category=${encodeURIComponent(category)}&owner=${encodeURIComponent(owner)}`);
+      if (!response.ok) throw new Error(`Download failed (${response.status})`);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${category}-${owner}.log`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error: any) {
+      Message.error(error?.message || 'Download failed');
+    }
+  };
   const logText = records.map((record) => record.line).join('\n');
 
   return (
@@ -221,16 +236,15 @@ const LogManager: React.FC = () => {
           <Button
             icon={<IconRefresh />}
             onClick={() => {
-              loadFiles();
-              loadRecords();
+              Promise.all([loadFiles(), loadRecords()]).catch((error) =>
+                Message.error(error?.message || 'Failed to refresh logs')
+              );
             }}
           >
             Refresh
           </Button>
-          {downloadUrl && (
-            <Link href={downloadUrl}>
-              <Button icon={<IconDownload />}>Download</Button>
-            </Link>
+          {owner && (
+            <Button icon={<IconDownload />} onClick={downloadLogs}>Download</Button>
           )}
         </Space>
         <Editor

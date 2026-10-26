@@ -1,5 +1,1 @@
-XSym
-0076
-70ee212cd2898f2a31fee8387b5746c9
-/Volumes/SSD/anti/Conductor/conductor/plugins/core/log_manager/web/index.tsx
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+/Users/ksmtang/Documents/anti/Conductor/conductor/plugins/core/log_manager/web/index.tsx

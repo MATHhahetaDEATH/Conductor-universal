@@ -6,6 +6,7 @@ import os
 import sys
 import json
 import shutil
+import time
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -164,6 +165,10 @@ class PluginManager:
     def _refresh_web_symlink(self, source_path: str, target_path: str) -> None:
         """Recreate a symlink so frontend watchers can observe plugin reloads."""
         os.makedirs(os.path.dirname(target_path), exist_ok=True)
+        # WebApp is served from a different working directory. Relative links
+        # resolve under ``src/pages/plugins/<id>`` and become unreadable to
+        # webpack, so always persist an absolute source path.
+        source_path = os.path.abspath(source_path)
         os.symlink(source_path, target_path, target_is_directory=os.path.isdir(source_path))
 
     def _initialize_plugin(self, p: dict, prev_module: Any = None) -> None:
