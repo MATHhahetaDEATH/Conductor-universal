@@ -47,7 +47,7 @@ with sync_playwright() as p:
             page.get_by_role("button", name="Terminal", exact=True).click()
             page.wait_for_timeout(250)
         elif route == "/core/plugin-management":
-            page.get_by_role("button", name="Refresh", exact=True).click()
+            page.get_by_role("button", name="Refresh", exact=True).first.click()
             rows = page.locator("tbody tr")
             print("PLUGIN_ROWS", rows.count())
             if rows.count():

@@ -20,6 +20,22 @@ import './mock';
 
 const store = createStore(rootReducer);
 
+// Mobile login hands the authenticated session to the web app through the URL hash.
+// Consume it before React's login check runs so the app cannot redirect to /login first.
+const mobileTokenPrefix = '#conductor-token=';
+if (window.location.hash.startsWith(mobileTokenPrefix)) {
+  const token = decodeURIComponent(window.location.hash.slice(mobileTokenPrefix.length));
+  if (token) {
+    localStorage.setItem('conductorToken', token);
+    localStorage.setItem('userStatus', 'login');
+    window.history.replaceState(
+      null,
+      document.title,
+      `${window.location.pathname}${window.location.search}`
+    );
+  }
+}
+
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem('conductorToken');
   if (token) {

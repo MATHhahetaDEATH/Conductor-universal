@@ -26,6 +26,12 @@ WebApp/dist/
 WebApp/.stylelintcache
 WebApp/.eslintcache
 
+# Tauri mobile app installs and generated build projects
+MobileApp/node_modules/
+MobileApp/dist/
+MobileApp/src-tauri/target/
+MobileApp/src-tauri/gen/
+
 # Local archive/reference material
 archive/
 

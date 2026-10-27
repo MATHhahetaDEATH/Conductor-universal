@@ -56,7 +56,12 @@ Reloading a high-priority core plugin also reloads lower-priority plugins that a
 Plugin Center
 -------------
 
-Plugin Center includes a **Dependencies** tab. It shows the current dependency graph, manifest sync status, and one-click actions that update the root manifests. Syncing adds missing Python declarations to ``pyproject.toml`` and missing React declarations to ``WebApp/package.json``. Each dependency row and sync preview also shows which plugin declared that dependency.
+Core Plugin Management includes a **Dependencies** section. It shows dependency
+status in a table with ecosystem, declared and installed versions, status,
+referring plugins, and source manifests. Ecosystem filtering and a text filter
+help narrow the list. The section also offers manifest sync and explicit missing
+dependency installation actions. Each row shows which plugin declared the
+dependency.
 
 After manifests are synchronized, the normal project tools complete the installation:
 

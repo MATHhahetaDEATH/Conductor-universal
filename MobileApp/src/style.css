@@ -1,0 +1,10 @@
+:root { font-family: sans-serif; color: #1d2129; background: #f2f3f5; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+.login { width: min(100%, 360px); padding: 24px; background: white; border: 1px solid #e5e6eb; border-radius: 8px; }
+h1 { margin: 0 0 24px; font-size: 24px; }
+label { display: block; margin: 14px 0; font-size: 14px; }
+input { display: block; width: 100%; margin-top: 6px; padding: 10px; border: 1px solid #c9cdd4; border-radius: 4px; font-size: 16px; }
+button { width: 100%; margin-top: 10px; padding: 11px; border: 0; border-radius: 4px; color: white; background: #165dff; font-size: 16px; }
+button:disabled { opacity: .6; }
+#message { min-height: 20px; color: #d03050; }

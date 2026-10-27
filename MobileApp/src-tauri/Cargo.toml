@@ -1,0 +1,23 @@
+[package]
+name = "conductor_mobile"
+version = "0.1.0"
+description = "Conductor mobile login shell"
+authors = ["Conductor"]
+edition = "2021"
+
+[lib]
+name = "conductor_mobile_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.4", features = [] }
+
+[dependencies]
+tauri = { version = "2.8", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+default = ["custom-protocol"]

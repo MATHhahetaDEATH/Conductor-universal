@@ -1,0 +1,8 @@
+{
+  "name": "conductor-ios-demo",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix ../MobileApp run tauri:ios",
+    "build": "npm --prefix ../MobileApp exec tauri -- ios build --debug --no-sign --target aarch64-sim --ci"
+  }
+}

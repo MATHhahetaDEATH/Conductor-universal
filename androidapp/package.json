@@ -1,0 +1,8 @@
+{
+  "name": "conductor-android-demo",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix ../MobileApp run tauri:android",
+    "build": "npm --prefix ../MobileApp exec tauri -- android build --debug"
+  }
+}

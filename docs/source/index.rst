@@ -17,6 +17,7 @@ Conductor is an extensible information processing system kernel designed for dec
    command
    logs
    dependencies
+   plugin_management
 
 .. toctree::
    :maxdepth: 2
@@ -29,6 +30,7 @@ Conductor is an extensible information processing system kernel designed for dec
    :caption: Development
 
    dev
+   mobile
    development/standards
 
 Indices and tables
